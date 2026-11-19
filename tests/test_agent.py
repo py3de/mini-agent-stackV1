@@ -37,7 +37,7 @@ def test_full_run_updates_crm_and_returns_structured_report(crm):
         ]
     )
 
-    result = run_meeting_agent("Call with Lena from Nordwerk ...", llm=llm)
+    result = run_meeting_agent("Call with Lena from Nordwerk ...", llm=llm, mode="auto")
 
     assert isinstance(result["report"], MeetingReport)
     assert result["report"].new_deal_stage == "contractsent"
@@ -55,7 +55,7 @@ def test_tool_errors_are_returned_to_the_model_not_raised(crm):
         ]
     )
 
-    result = run_meeting_agent("notes about an unknown deal", llm=llm)
+    result = run_meeting_agent("notes about an unknown deal", llm=llm, mode="auto")
 
     tool_message = llm.calls[1][-1]  # what the model saw after the failing tool call
     assert "Error updating deal" in tool_message.content
@@ -72,7 +72,7 @@ def test_step_limit_stops_runaway_tool_loops(crm, monkeypatch):
         ]
     )
 
-    result = run_meeting_agent("notes", llm=llm)
+    result = run_meeting_agent("notes", llm=llm, mode="auto")
 
     assert result["steps"] == 2
     assert result["report"] is not None
@@ -93,7 +93,7 @@ def test_falls_back_to_backup_model_when_primary_is_overloaded(crm):
         ]
     )
 
-    result = run_meeting_agent("notes", llm=OverloadedModel(responses=[]), fallbacks=[backup])
+    result = run_meeting_agent("notes", llm=OverloadedModel(responses=[]), fallbacks=[backup], mode="auto")
 
     assert result["report"].summary == REPORT_ARGS["summary"]
 

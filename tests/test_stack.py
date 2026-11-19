@@ -26,20 +26,23 @@ def test_unknown_provider_and_missing_key(monkeypatch):
         get_llm("openai")
 
 
-def test_mcp_server_exposes_the_same_tools(crm):
+def test_mcp_server_is_read_only_by_default(crm):
     from agent_stack.mcp_server import server
 
     names = {t.name for t in asyncio.run(server.list_tools())}
-    assert names == {"search_contacts", "search_deals", "create_note", "update_deal_stage", "search_knowledge_base"}
-    asyncio.run(server.call_tool("update_deal_stage", {"deal_id": "9003", "stage": "closedwon"}))
-    assert crm.data["deals"]["9003"]["dealstage"] == "closedwon"
+    assert names == {"search_contacts", "search_deals", "search_knowledge_base"}
+    found = asyncio.run(server.call_tool("search_deals", {"query": "Fjord"}))
+    assert "9003" in str(found)
 
 
 def test_webhook_requires_secret_and_returns_report(monkeypatch):
     fake_report = MeetingReport(summary="s", follow_up_email="e", sentiment="neutral")
     monkeypatch.setattr(
-        api, "run_meeting_agent",
-        lambda notes, provider=None: {"report": fake_report, "tool_calls": [], "steps": 1, "latency_s": 0.1},
+        api, "start_meeting_run",
+        lambda notes, provider=None, mode=None: {
+            "run_id": "r1", "status": "completed", "mode": mode, "pending_actions": [], "report": fake_report,
+            "escalation": None, "tool_calls": [], "steps": 1, "latency_s": 0.1,
+        },
     )
     client = TestClient(api.app)
     body = {"notes": "Some meeting notes here", "provider": "google"}
@@ -48,3 +51,9 @@ def test_webhook_requires_secret_and_returns_report(monkeypatch):
     ok = client.post("/webhooks/meeting-notes", json=body, headers={"X-Webhook-Secret": api.settings.webhook_secret})
     assert ok.status_code == 200
     assert ok.json()["report"]["sentiment"] == "neutral"
+
+
+def test_api_rejects_auto_mode_per_request():
+    client = TestClient(api.app)
+    r = client.post("/agent/run", json={"notes": "Some meeting notes here", "mode": "auto"})
+    assert r.status_code == 422
