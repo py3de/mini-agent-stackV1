@@ -1,0 +1,8 @@
+Call with Lena Fischer (Nordwerk GmbH), 45 min.
+
+- Lena's team reviewed our proposal for the CRM agent rollout. Feedback very positive, the
+  live demo of the deal-summary agent convinced their sales lead.
+- Budget of 48k is approved internally. Procurement needs the contract by Friday.
+- Open question: data residency, they need EU hosting confirmed in writing.
+- Next steps: we send the contract today (Max), Lena confirms the signatory by Wednesday,
+  our security team sends the EU hosting statement.
