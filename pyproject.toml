@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mini-agent-stack"
+version = "0.1.0"
+description = "A model-agnostic LangChain/LangGraph reference stack for internal AI tools, with a HubSpot CRM agent, MCP server, webhook API and LLM evals."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Soban Siddique" }]
+dependencies = [
+    "langchain>=1.0",
+    "langgraph>=1.0",
+    "langchain-google-genai",
+    "langchain-openai",
+    "langchain-anthropic",
+    "langchain-ollama",
+    "fastapi",
+    "uvicorn",
+    "httpx",
+    "mcp>=2.0",
+    "pydantic>=2",
+    "python-dotenv",
+    "numpy",  # needed by InMemoryVectorStore similarity search
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+agent-stack = "agent_stack.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
