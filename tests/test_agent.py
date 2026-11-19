@@ -103,5 +103,6 @@ def test_transient_error_detection():
 
     assert is_transient_error(RuntimeError("503 UNAVAILABLE high demand"))
     assert is_transient_error(RuntimeError("429 RESOURCE_EXHAUSTED"))
+    assert is_transient_error(RuntimeError("504 DEADLINE_EXCEEDED. Deadline expired before operation could complete."))
     assert not is_transient_error(RuntimeError("404 NOT_FOUND model does not exist"))
     assert not is_transient_error(RuntimeError("401 invalid API key"))

@@ -272,9 +272,9 @@ changes data.
 - **Evals check side effects, not claims.** A model can say "I updated the deal" without doing it. The
   evals inspect the CRM state after each run.
 - **Resilience in two layers.** Each model call first falls back to backup models (`LLM_FALLBACKS`), and
-  graph nodes retry transient errors (503 overload, 429 rate limits) with exponential backoff. Permanent
+  graph nodes retry transient errors (503 overload, 504 deadline exceeded, 429 rate limits) with exponential backoff. Permanent
   errors such as a wrong key or model name fail fast with a readable message instead of being retried.
-  Provider SDKs are set to fail fast (1 retry, 60 s timeout) so an overloaded model hands over to the
+  Provider SDKs are set to fail fast (1 retry, 120 s timeout) so an overloaded model hands over to the
   backup in seconds. With SDK defaults, one overloaded run took over 6 minutes.
 - **Section-level chunking for RAG.** Company documents are short and well structured, so one chunk per
   `##` section keeps answers complete and sources readable. Fixed-size chunking would cut answers in half.

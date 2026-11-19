@@ -57,7 +57,10 @@ DEFAULT_FALLBACKS: dict[str, list[str]] = {
     "google": ["google:gemini-3.5-flash-lite"],
 }
 
-TRANSIENT_MARKERS = ("503", "unavailable", "429", "resource_exhausted", "rate limit", "overloaded", "high demand", "timeout", "timed out")
+TRANSIENT_MARKERS = (
+    "503", "unavailable", "504", "deadline_exceeded", "deadline expired", "429", "resource_exhausted",
+    "rate limit", "overloaded", "high demand", "timeout", "timed out", "500 internal",
+)
 
 
 def is_transient_error(exc: BaseException) -> bool:
@@ -98,10 +101,10 @@ def get_llm(provider: str | None = None, model: str | None = None, temperature: 
         )
 
     kwargs: dict = {}
-    # Fail fast and let our own fallback/retry layer take over: SDK defaults (e.g. 6 silent retries
+    # Keep SDK retries low and let our own fallback/retry layer take over: SDK defaults (e.g. 6 silent retries
     # on Google) made an overloaded model cost minutes before the backup model was even tried.
     if provider != "ollama":
-        kwargs |= {"max_retries": int(os.getenv("LLM_MAX_RETRIES", "1")), "timeout": float(os.getenv("LLM_TIMEOUT_S", "60"))}
+        kwargs |= {"max_retries": int(os.getenv("LLM_MAX_RETRIES", "1")), "timeout": float(os.getenv("LLM_TIMEOUT_S", "120"))}
     # Only send a temperature when one is set: newer models (e.g. Gemini 3.x) use fixed sampling and warn otherwise.
     temperature = temperature if temperature is not None else (float(t) if (t := os.getenv("LLM_TEMPERATURE")) else None)
     if temperature is not None:
