@@ -1,7 +1,11 @@
-"""MCP server exposing the same CRM tools to any MCP client (Claude Desktop, IDEs, other agents).
+"""MCP server exposing the same tools to any MCP client (Claude Desktop, IDEs, other agents).
 
 The tools are not reimplemented here: the server wraps the existing LangChain tools, so a tool
 is written once and is available to the LangGraph agent and over MCP.
+
+Governance: MCP clients have no approval gate, so the server is **read-only by default** and only
+exposes tools classified as `read`. Set MCP_ALLOW_WRITES=true to also expose write tools. Every MCP
+tool call is recorded in the audit trail under the run ID "mcp".
 
 Run (stdio):  python -m agent_stack.mcp_server
 Claude Desktop config example is in the README.
@@ -10,14 +14,19 @@ Claude Desktop config example is in the README.
 from __future__ import annotations
 
 import inspect
+import os
 
 from mcp.server.mcpserver import MCPServer
 
+from agent_stack.governance import get_audit, permission_for
 from agent_stack.tools import get_tools
+
+ALLOW_WRITES = os.getenv("MCP_ALLOW_WRITES", "false").lower() in ("1", "true", "yes")
 
 server = MCPServer(
     "mini-agent-stack-crm",
-    instructions="CRM tools: search contacts and deals, log meeting notes, move deal stages.",
+    instructions="CRM tools: search contacts, deals and the knowledge base"
+    + ("; log meeting notes and move deal stages." if ALLOW_WRITES else ". Read-only."),
 )
 
 
@@ -25,7 +34,10 @@ def _register(lc_tool) -> None:
     """Expose one LangChain tool as an MCP tool with the same name, description and arguments."""
 
     def call(**kwargs):
-        return lc_tool.invoke(kwargs)
+        output = str(lc_tool.invoke(kwargs))
+        get_audit().record("tool_call", "mcp", tool=lc_tool.name, args=kwargs,
+                           permission=permission_for(lc_tool.name), decision="allowed", result=output[:300])
+        return output
 
     fields = lc_tool.args_schema.model_fields
     call.__name__ = lc_tool.name
@@ -40,7 +52,8 @@ def _register(lc_tool) -> None:
 
 
 for _tool in get_tools("crm"):
-    _register(_tool)
+    if ALLOW_WRITES or permission_for(_tool.name) == "read":
+        _register(_tool)
 
 
 def main() -> None:

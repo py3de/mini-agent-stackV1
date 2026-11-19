@@ -66,7 +66,8 @@ def run(providers: list[str]) -> list[dict]:
             set_hubspot(crm)
             error, result = None, None
             try:
-                result = run_meeting_agent(case["notes"], provider=provider, llm=llm)
+                # auto mode: evals measure the agent's own decisions, so writes run without a human in the loop
+                result = run_meeting_agent(case["notes"], provider=provider, llm=llm, mode="auto")
             except Exception as exc:  # noqa: BLE001 - a crash is a result too
                 error = f"{type(exc).__name__}: {exc}"
             scores = score_case(case, crm, result)
