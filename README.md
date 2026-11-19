@@ -1,6 +1,6 @@
 # Mini Agent Stack
 
-[![tests](https://github.com/py3de/mini-agent-stack/actions/workflows/tests.yml/badge.svg)](https://github.com/py3de/mini-agent-stack/actions/workflows/tests.yml)
+[![tests](https://github.com/py3de/mini-agent-stackV1/actions/workflows/tests.yml/badge.svg)](https://github.com/py3de/mini-agent-stackV1/actions/workflows/tests.yml)
 
 **A model-agnostic LangChain / LangGraph reference stack for internal AI tools.**
 
@@ -81,8 +81,8 @@ graph TD;
 ## Quickstart
 
 ```bash
-git clone https://github.com/py3de/mini-agent-stack.git
-cd mini-agent-stack
+git clone https://github.com/py3de/mini-agent-stackV1.git
+cd mini-agent-stackV1
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 cp .env.example .env
