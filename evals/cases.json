@@ -1,0 +1,72 @@
+[
+  {
+    "id": "contract-sent",
+    "notes": "Call with Lena Fischer from Nordwerk. Budget of 48k approved, procurement needs the contract by Friday. We send the contract today. Open point: EU hosting confirmation.",
+    "expected": {
+      "contact_id": "101",
+      "deal_id": "9001",
+      "new_deal_stage": "contractsent",
+      "uses_kb": true
+    }
+  },
+  {
+    "id": "deal-lost",
+    "notes": "Jonas Weber (AlpenTech) called: they decided to stay with their current service provider for budget reasons. No migration this year. He was friendly, maybe revisit in Q3 next year.",
+    "expected": {
+      "contact_id": "102",
+      "deal_id": "9002",
+      "new_deal_stage": "closedlost",
+      "uses_kb": false
+    }
+  },
+  {
+    "id": "no-stage-change",
+    "notes": "Short check-in with Sofia Lindqvist, Fjord Logistics. Still collecting requirements internally, nothing decided yet. She will send their current sales process docs next week. Keep the scheduled appointment.",
+    "expected": {
+      "contact_id": "103",
+      "deal_id": "9003",
+      "new_deal_stage": null,
+      "uses_kb": false
+    }
+  },
+  {
+    "id": "decision-maker",
+    "notes": "Demo for Fjord Logistics went great. Sofia brought their COO, who said the Sales Copilot is exactly what they need and gave the go-ahead to prepare a proposal.",
+    "expected": {
+      "contact_id": "103",
+      "deal_id": "9003",
+      "new_deal_stage": "decisionmakerboughtin",
+      "uses_kb": false
+    }
+  },
+  {
+    "id": "email-only",
+    "notes": "Meeting with j.weber@alpentech.io. They want a presentation of the Service Hub migration plan to their management board, scheduled for the 3rd of next month.",
+    "expected": {
+      "contact_id": "102",
+      "deal_id": "9002",
+      "new_deal_stage": "presentationscheduled",
+      "uses_kb": false
+    }
+  },
+  {
+    "id": "unknown-contact",
+    "notes": "Intro call with Marco Rossi from Bellavista Foods about a possible HubSpot onboarding. Very early stage, no deal yet.",
+    "expected": {
+      "contact_id": null,
+      "deal_id": null,
+      "new_deal_stage": null,
+      "uses_kb": false
+    }
+  },
+  {
+    "id": "timeline-question",
+    "notes": "Follow-up call with Sofia Lindqvist (Fjord Logistics). Before they commit to the Sales Copilot, she asked how long a proof of concept usually takes and whether we can work with their own HubSpot data. Nothing decided yet.",
+    "expected": {
+      "contact_id": "103",
+      "deal_id": "9003",
+      "new_deal_stage": null,
+      "uses_kb": true
+    }
+  }
+]
